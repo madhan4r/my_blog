@@ -493,8 +493,16 @@
       <div class="section-title">
         <h2>Resume</h2>
         <p>Check My Resume</p>
-        <a href="https://rxresu.me/api/assets/exports/RxResume_PDFExport_mycachebot_madhan-kumar-r_1688655837.pdf" target="_blank" download="Madhan_R_Resume.pdf" class="btn btn-primary">Download</a>
+        <a href="javascript:void(0);" class="btn btn-secondary" style="margin-right: 10px;"
+          onclick="viewResume()">View</a>
+        <a href="./files/madhan_kumar_r_latest.pdf" target="_blank" download="Madhan_R_Resume.pdf"
+          class="btn btn-primary">Download</a>
+      </div>
 
+      <!-- Hidden iframe to display the PDF -->
+      <div id="resumeViewer" style="display: none; margin-top: 20px; position: relative;">
+        <button onclick="closeResume()" style="position: absolute; top: 10px; right: 10px; background-color: #ff4b5c; color: white; border: none; padding: 5px 10px; cursor: pointer;">Close</button>
+        <iframe id="resumeIframe" src="" width="100%" height="500px" style="border: 1px solid #ccc;"></iframe>
       </div>
 
       <div class="row">
@@ -965,6 +973,24 @@
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
+
+  <script type="text/javascript">
+    function viewResume() {
+      var resumeIframe = document.getElementById('resumeIframe');
+      resumeIframe.src = './files/madhan_kumar_r_latest.pdf'; // Path to your PDF file
+      
+      var resumeViewer = document.getElementById('resumeViewer');
+      resumeViewer.style.display = 'block';
+    }
+
+    function closeResume() {
+    var resumeViewer = document.getElementById('resumeViewer');
+    resumeViewer.style.display = 'none';
+
+    var resumeIframe = document.getElementById('resumeIframe');
+    resumeIframe.src = ''; // Clear the src to stop loading the PDF
+  }
+  </script>
 
 </body>
 
