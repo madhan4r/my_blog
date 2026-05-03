@@ -41,10 +41,3 @@ jobs:
             --exclude ".github/" \
             -e "ssh -p ${{ secrets.DEPLOY_PORT }}" \
             ./ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/"
-
-      - name: Run post-deploy command
-        if: ${{ secrets.DEPLOY_POST_COMMAND != '' }}
-        run: |
-          ssh -p "${{ secrets.DEPLOY_PORT }}" \
-            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
-            "${{ secrets.DEPLOY_POST_COMMAND }}"
