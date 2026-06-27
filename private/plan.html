@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan</title>
+<style>
+  #gate-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #f5f4f0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #gate-box {
+    background: #fff; border: 1px solid #e2e0d8; border-radius: 16px;
+    padding: 2rem 2.5rem; text-align: center; min-width: 280px;
+  }
+  #gate-box h2 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 16px; font-weight: 600; color: #1a1a18; margin-bottom: 6px; }
+  #gate-box p { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; color: #8a8880; margin-bottom: 1.25rem; }
+  #gate-input {
+    width: 100%; padding: 10px 14px; border: 1px solid #c8c6bc; border-radius: 8px;
+    font-size: 14px; outline: none; margin-bottom: 10px; box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  #gate-input:focus { border-color: #1a6ef5; }
+  #gate-btn {
+    width: 100%; padding: 10px; background: #1a6ef5; color: #fff; border: none;
+    border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  #gate-btn:hover { background: #155ed4; }
+  #gate-error { font-size: 12px; color: #b02020; margin-top: 8px; display: none; }
+  #main-content { display: none; }
+</style>
+</head>
+<body>
+
+<div id="gate-overlay">
+  <div id="gate-box">
+    <h2>Private Page</h2>
+    <p>Enter password to continue</p>
+    <input id="gate-input" type="password" placeholder="Password" autofocus />
+    <button id="gate-btn" onclick="checkPassword()">Enter</button>
+    <div id="gate-error">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<div id="main-content">
+
+<!-- ==================== PLAN CONTENT ==================== -->
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface-1: #f8f7f3;
+    --border: #e2e0d8;
+    --border-strong: #c8c6bc;
+    --text-primary: #1a1a18;
+    --text-secondary: #4a4a46;
+    --text-muted: #8a8880;
+    --accent: #1a6ef5;
+    --accent-bg: #eaf0fe;
+    --accent-border: #b3cdfb;
+    --success: #0a7c4a;
+    --success-bg: #e6f5ee;
+    --success-border: #9fd9be;
+    --warning: #8a5500;
+    --warning-bg: #fef3e0;
+    --warning-border: #f5cc7a;
+    --danger: #b02020;
+    --danger-bg: #fdeaea;
+    --danger-border: #f0aaaa;
+    --purple: #3c3489;
+    --purple-bg: #eeedfe;
+    --purple-border: #afa9ec;
+    --green-dark: #085041;
+    --amber-dark: #633806;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text-primary); font-size: 14px; line-height: 1.6; }
+  .container { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .hero { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; text-align: center; }
+  .hero h1 { font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+  .hero p { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .hero-tag { font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-secondary); background: var(--surface-1); }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab { font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; color: var(--text-secondary); background: var(--surface); transition: all 0.15s; }
+  .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .tab:hover:not(.active) { background: var(--surface-1); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .section-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; margin-top: 2rem; }
+  .section-title:first-child { margin-top: 0; }
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  .alert { border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; border: 1px solid; font-size: 13px; line-height: 1.7; }
+  .alert.info { background: var(--accent-bg); border-color: var(--accent-border); color: var(--text-secondary); }
+  .alert.success { background: var(--success-bg); border-color: var(--success-border); color: var(--text-secondary); }
+  .alert.warn { background: var(--warning-bg); border-color: var(--warning-border); color: var(--text-secondary); }
+  .alert.danger { background: var(--danger-bg); border-color: var(--danger-border); color: var(--text-secondary); }
+  .alert strong { font-weight: 600; }
+  .alert.info strong { color: var(--accent); }
+  .alert.success strong { color: var(--success); }
+  .alert.warn strong { color: var(--warning); }
+  .alert.danger strong { color: var(--danger); }
+
+  .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .ov-card { border-radius: 12px; padding: 14px 16px; border: 1px solid; }
+  .ov-card.purple { background: var(--purple-bg); border-color: var(--purple-border); }
+  .ov-card.green { background: var(--success-bg); border-color: var(--success-border); }
+  .ov-card.amber { background: var(--warning-bg); border-color: var(--warning-border); }
+  .ov-card.blue { background: var(--accent-bg); border-color: var(--accent-border); }
+  .ov-label { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+  .ov-value { font-size: 20px; font-weight: 600; margin-bottom: 3px; }
+  .ov-card.purple .ov-value { color: var(--purple); }
+  .ov-card.green .ov-value { color: var(--success); }
+  .ov-card.amber .ov-value { color: var(--amber-dark); }
+  .ov-card.blue .ov-value { color: var(--accent); }
+  .ov-sub { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+
+  .schedule-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
+  .schedule-header { padding: 11px 16px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; background: var(--surface-1); }
+  .schedule-row { display: flex; gap: 14px; padding: 11px 16px; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .schedule-row:last-child { border-bottom: none; }
+  .schedule-time { font-size: 11px; font-weight: 600; color: var(--text-muted); min-width: 88px; padding-top: 2px; flex-shrink: 0; }
+  .schedule-body { flex: 1; }
+  .schedule-title { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
+  .schedule-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .stag { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+  .t-dsa { background: var(--purple-bg); color: var(--purple); }
+  .t-comm { background: var(--success-bg); color: var(--success); }
+  .t-finance { background: var(--warning-bg); color: var(--amber-dark); }
+  .t-career { background: var(--accent-bg); color: var(--accent); }
+
+  .month-alert { border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; border: 1px solid; font-size: 13px; font-weight: 500; }
+
+  .week-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+  .week-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface-1); }
+  .week-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .week-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+  .wb-p { background: var(--purple-bg); color: var(--purple); }
+  .wb-g { background: var(--success-bg); color: var(--success); }
+  .wb-a { background: var(--warning-bg); color: var(--amber-dark); }
+  .week-body { padding: 14px 16px; }
+  .pillar-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+  .pillar-tag { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 10px; min-width: 74px; text-align: center; flex-shrink: 0; margin-top: 1px; }
+  .pillar-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; flex: 1; }
+  .pillar-text strong { font-weight: 600; color: var(--text-primary); }
+  .week-checkpoint { background: var(--surface-1); border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 12px; color: var(--text-secondary); line-height: 1.6; border: 1px solid var(--border); }
+  .week-checkpoint strong { font-weight: 600; color: var(--text-primary); }
+
+  .finance-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+  .finance-table th { font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; background: var(--surface-1); }
+  .finance-table th:last-child { text-align: right; }
+  .finance-table td { font-size: 13px; color: var(--text-secondary); padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .finance-table td:last-child { text-align: right; font-weight: 600; }
+  .finance-table .green { color: var(--success); }
+  .finance-table .red { color: var(--danger); }
+  .finance-table .total td { font-size: 14px; font-weight: 600; color: var(--text-primary); background: var(--surface-1); border-top: 2px solid var(--border-strong); }
+  .finance-table .total td:last-child { color: var(--success); }
+
+  .sip-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .sip-label { font-size: 13px; color: var(--text-secondary); min-width: 200px; }
+  .sip-bar-bg { flex: 1; height: 10px; background: var(--surface-1); border-radius: 5px; overflow: hidden; border: 1px solid var(--border); }
+  .sip-bar-fill { height: 100%; border-radius: 5px; }
+  .sip-amount { font-size: 13px; font-weight: 600; color: var(--text-primary); min-width: 65px; text-align: right; }
+
+  .checklist { display: flex; flex-direction: column; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .check-row { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+  .check-row:last-child { border-bottom: none; }
+  .check-row:hover { background: var(--surface-1); }
+  .check-box { width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid var(--border-strong); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.15s; }
+  .check-box.checked { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .check-label { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .check-label.checked { text-decoration: line-through; color: var(--text-muted); }
+  .check-label strong { font-weight: 600; color: var(--text-primary); }
+  .check-label.checked strong { color: var(--text-muted); }
+
+  .milestone-list { display: flex; flex-direction: column; gap: 10px; }
+  .milestone { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .ms-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .ms-body { flex: 1; }
+  .ms-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+  .ms-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+  .cards-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .card.success { border-color: var(--success-border); background: var(--success-bg); }
+  .card.accent { border-color: var(--accent-border); background: var(--accent-bg); }
+  .card-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+  .card-value { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .card-sub { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .card.success .card-value { color: var(--success); }
+  .card.accent .card-value { color: var(--accent); }
+
+  footer { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+</style>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Madhan's 3-Month Master Plan</h1>
+    <p>July · August · September 2026 — DSA + Communication + Finance + Career Switch</p>
+    <div class="hero-tags">
+      <span class="hero-tag">Starting net worth: ₹28.4L</span>
+      <span class="hero-tag">Target: Razorpay / PhonePe offer</span>
+      <span class="hero-tag">SIP: ₹55,000/month</span>
+      <span class="hero-tag">DSA: 90–100 problems</span>
+      <span class="hero-tag">Canada decision: April 2027</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showPanel('overview', this)">Overview</div>
+    <div class="tab" onclick="showPanel('month1', this)">Month 1 · July</div>
+    <div class="tab" onclick="showPanel('month2', this)">Month 2 · August</div>
+    <div class="tab" onclick="showPanel('month3', this)">Month 3 · September</div>
+    <div class="tab" onclick="showPanel('finance', this)">Finance</div>
+    <div class="tab" onclick="showPanel('thisweek', this)">This Week ✅</div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="panel active" id="panel-overview">
+    <div class="alert info"><strong>Your 3-month mission:</strong> By Sep 30, 2026 — SIP running, emergency fund built, 90+ DSA problems solved, communication interview-ready, and first interview calls at Razorpay / PhonePe. Everything runs in parallel.</div>
+
+    <div class="section-title">3-month targets</div>
+    <div class="overview-grid">
+      <div class="ov-card purple"><div class="ov-label">DSA target</div><div class="ov-value">90–100</div><div class="ov-sub">Problems. Easy + medium. Neetcode.io</div></div>
+      <div class="ov-card green"><div class="ov-label">SIP started</div><div class="ov-value">₹55,000</div><div class="ov-sub">Per month. 3 funds. Week 1.</div></div>
+      <div class="ov-card amber"><div class="ov-label">Emergency fund</div><div class="ov-value">₹1.5L</div><div class="ov-sub">Built by Month 2. Sweep FD.</div></div>
+      <div class="ov-card blue"><div class="ov-label">Career status</div><div class="ov-value">Applying</div><div class="ov-sub">First apps sent by September.</div></div>
+    </div>
+
+    <div class="section-title">Daily schedule — weekdays</div>
+    <div class="schedule-box">
+      <div class="schedule-header">Monday to Friday</div>
+      <div class="schedule-row"><div class="schedule-time">6:00–6:30 AM</div><div class="schedule-body"><div class="schedule-title">Wake up</div><div class="schedule-desc">No phone. No news. Protect this window.</div></div></div>
+      <div class="schedule-row"><div class="schedule-time">6:30–8:00 AM</div><div class="schedule-body"><div class="schedule-title">DSA — 1 problem <span class="stag t-dsa">DSA</span></div><div class="schedule-desc">Neetcode.io. Read → think 10 min → solve → understand pattern. If stuck, read solution and understand it. Don't skip.</div></div></div>
+      <div class="schedule-row"><div class="schedule-time">8:00–8:20 AM</div><div class="schedule-body"><div class="schedule-title">Communication practice <span class="stag t-comm">Comm</span></div><div class="schedule-desc">Month 1: read 1 tech article aloud. Month 2: explain 1 concept aloud. Month 3: practise 1 STAR answer.</div></div></div>
+      <div class="schedule-row"><div class="schedule-time">9:00 AM–6 PM</div><div class="schedule-body"><div class="schedule-title">Work — D4Insight / ENBD</div><div class="schedule-desc">Use English in all Slack messages and emails. Speak first in at least one meeting per day.</div></div></div>
+      <div class="schedule-row"><div class="schedule-time">Lunch (30 min)</div><div class="schedule-body"><div class="schedule-title">System design video <span class="stag t-comm">Comm</span></div><div class="schedule-desc">Gaurav Sen YouTube. Watch while eating. Builds English rhythm and system design vocabulary simultaneously.</div></div></div>
+      <div class="schedule-row"><div class="schedule-time">Commute</div><div class="schedule-body"><div class="schedule-title">English podcast <span class="stag t-comm">Comm</span></div><div class="schedule-desc">Software Engineering Daily or Lex Fridman tech episodes. Flip your Tamil/English input ratio.</div></div></div>
+      <div class="schedule-row"><div class="schedule-time">9:00–9:30 PM</div><div class="schedule-body"><div class="schedule-title">DSA review + job research <span class="stag t-career">Career</span></div><div class="schedule-desc">Re-read today's problem. Check Leetcode discuss for alternate solutions. 10 min job market check from Month 2.</div></div></div>
+    </div>
+
+    <div class="section-title">Daily schedule — weekends</div>
+    <div class="schedule-box">
+      <div class="schedule-header">Saturday + Sunday</div>
+      <div class="schedule-row"><div class="schedule-time">Sat 7–9 AM</div><div class="schedule-body"><div class="schedule-title">2 DSA problems <span class="stag t-dsa">DSA</span></div><div class="schedule-desc">Slightly harder problems. Revisit any weak pattern from the week.</div></div></div>
+      <div class="schedule-row"><div class="schedule-time">Sat 9–10 AM</div><div class="schedule-body"><div class="schedule-title">Mock interview <span class="stag t-comm">Comm</span></div><div class="schedule-desc">With Claude or Pramp.com. Full 45-min session: DSA + system design + behavioural.</div></div></div>
+      <div class="schedule-row"><div class="schedule-time">Sun 7–8 AM</div><div class="schedule-body"><div class="schedule-title">Weekly review + system design <span class="stag t-dsa">DSA</span></div><div class="schedule-desc">Review week's problems. Watch 1 system design video — design it yourself before watching solution.</div></div></div>
+      <div class="schedule-row"><div class="schedule-time">Sun 8–8:30 AM</div><div class="schedule-body"><div class="schedule-title">Finance review <span class="stag t-finance">Finance</span></div><div class="schedule-desc">Check Zerodha portfolio. Confirm SIP ran. Note savings balance. 30 min max.</div></div></div>
+    </div>
+  </div>
+
+  <!-- MONTH 1 -->
+  <div class="panel" id="panel-month1">
+    <div class="alert" style="background:var(--purple-bg);border-color:var(--purple-border);color:var(--text-secondary)"><strong style="color:var(--purple)">Month 1 theme — Start everything, master the basics.</strong> July is about building habits, not perfection. Consistency over speed.</div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 1 · July 1–7 — Setup week</div><span class="week-badge wb-p">Foundation</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>Open Zerodha today.</strong> 20 min. Set SIP: ₹30K UTI Nifty 50 + ₹15K Nippon Midcap 150 + ₹10K Parag Parikh Flexi Cap. Auto-debit on 5th every month. Open sweep-in FD with ₹20K for emergency fund.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>Day 1 on Neetcode.io.</strong> Arrays section. Problems: Two Sum, Valid Anagram, Contains Duplicate. 30 min each. Understand the hashmap pattern behind all three.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Install Grammarly</strong> on Chrome today. Record a 2-min voice note: "Tell me about your current project at ENBD." Listen back. This is your baseline.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Update LinkedIn headline:</strong> "Senior Backend Engineer | Node.js · Kafka · Distributed Systems | Fintech & Banking." Turn on Open to Work (visible to recruiters only).</div></div>
+        <div class="week-checkpoint"><strong>Week 1 checkpoint:</strong> Zerodha open ✓ · SIP set ✓ · 3 DSA problems ✓ · Grammarly installed ✓ · LinkedIn updated ✓</div>
+      </div>
+    </div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 2 · July 8–14 — Rhythm week</div><span class="week-badge wb-p">Habits form</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>Arrays continued.</strong> Best Time to Buy Stock, Product of Array Except Self, Maximum Subarray (Kadane's). These 3 patterns appear in 40% of easy/medium interviews.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Read 1 tech article aloud every morning.</strong> Start with medium.com/engineering-at-razorpay — reading about your target company AND practising English simultaneously.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>Call your bank</strong> about land loan prepayment. Ask: is there a penalty? What's the minimum amount? Plan to prepay ₹1L in Month 2 once emergency fund is seeded.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Write your "Tell me about yourself" answer.</strong> 90 seconds. Use: current role → key achievement (Kafka at ENBD) → what you're looking for. Practise 5 times until natural.</div></div>
+        <div class="week-checkpoint"><strong>Week 2 checkpoint:</strong> 8 DSA problems total ✓ · Morning reading habit forming ✓ · "Tell me about yourself" drafted ✓</div>
+      </div>
+    </div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 3 · July 15–21 — Two pointers week</div><span class="week-badge wb-p">Core patterns</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>Two pointers + sliding window.</strong> Valid Palindrome, 3Sum, Container With Most Water, Longest Substring Without Repeating. Learn to recognise these patterns instantly.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Start voice journaling.</strong> Every evening, 5 minutes: "What did I work on today? What technical decision did I make?" Record on phone. Listen back weekly to track improvement.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>Emergency fund: ₹60,000 saved</strong> by end of Month 1. Separate savings account labelled "Emergency Only." Never touch it.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Research target companies.</strong> Read Razorpay engineering blog, PhonePe tech blog, CRED engineering blog. Understand their stack and problems — shapes your interview answers.</div></div>
+        <div class="week-checkpoint"><strong>Week 3 checkpoint:</strong> 16 DSA problems ✓ · Voice journal habit started ✓ · ₹60K emergency fund seeded ✓</div>
+      </div>
+    </div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 4 · July 22–31 — Binary search week</div><span class="week-badge wb-p">First mock</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>Binary search.</strong> Search in Rotated Array, Find Minimum in Rotated Array, Koko Eating Bananas. Binary search on answer (not just arrays) — understand the template deeply.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>First mock interview this weekend.</strong> Use Claude or Pramp.com. Don't over-prepare — just show up and see where you are. Feedback guides Month 2.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>First SIP deduction on Aug 5.</strong> Confirm ₹55,000 deducted. Check Zerodha to verify units allotted. If anything failed, fix immediately.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Draft your resume.</strong> 1 page. Quantify everything — "reduced latency by X%", "handled Y transactions/second", "designed Kafka pipeline for Z consumers."</div></div>
+        <div class="week-checkpoint"><strong>Month 1 end:</strong> 25+ DSA problems ✓ · SIP running ✓ · Emergency fund ₹60K ✓ · Resume drafted ✓ · LinkedIn active ✓ · 1 mock interview done ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONTH 2 -->
+  <div class="panel" id="panel-month2">
+    <div class="alert success"><strong>Month 2 theme — Go deeper.</strong> Trees, graphs, system design. Communication gets technical. Emergency fund reaches ₹1.5L.</div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 5 · Aug 1–7 — Stacks + queues</div><span class="week-badge wb-g">Depth begins</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>Stacks + queues.</strong> Valid Parentheses, Min Stack, Daily Temperatures, Car Fleet. Stacks appear in string problems, monotonic patterns, and browser history type questions.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Explain 1 technical concept aloud per day.</strong> "How Kafka consumer groups work", "What is idempotency", "How I handled message ordering at ENBD." 2 minutes. Record.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>Emergency fund target ₹1L.</strong> Add ₹40,000 this month. Confirm second SIP deduction. Start tracking monthly net worth in a notes app.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Finalise resume.</strong> Apply to 2–3 companies on AngelList / Naukri / LinkedIn to warm up the process. Not Razorpay yet — keep that for Month 3.</div></div>
+        <div class="week-checkpoint"><strong>Week 5 checkpoint:</strong> 32 DSA problems ✓ · 2 warm-up applications sent ✓ · Resume final ✓</div>
+      </div>
+    </div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 6 · Aug 8–14 — Binary trees</div><span class="week-badge wb-g">BFS / DFS</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>Binary trees — BFS + DFS.</strong> Invert Binary Tree, Max Depth, Diameter, Balanced Tree, Level Order Traversal. Learn recursive and iterative versions of each.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Start Pramp.com.</strong> Book first peer mock interview. Free. Real person. Get the experience of speaking under pressure — don't worry about perfection.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>Loan prepayment.</strong> Make a ₹50,000 extra payment on the land loan. Call bank first. Every rupee prepaid saves ~₹1.5 in total interest.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>System design study begins.</strong> Gaurav Sen playlist. Design: URL shortener, Notification system, Rate limiter. These are Razorpay / PhonePe favourites.</div></div>
+        <div class="week-checkpoint"><strong>Week 6 checkpoint:</strong> 40 DSA problems ✓ · First Pramp interview done ✓ · 3 system designs practised ✓</div>
+      </div>
+    </div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 7 · Aug 15–21 — Graphs intro</div><span class="week-badge wb-g">STAR stories</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>BST + graphs intro.</strong> Validate BST, Kth Smallest. Graphs: Number of Islands, Clone Graph. BFS/DFS on graphs is same pattern as trees — recognise this.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Prepare 5 STAR stories:</strong> 1) Kafka performance issue solved 2) Disagreement with teammate 3) Tight deadline met 4) Built something from scratch 5) Mistake you fixed. Write and practise each.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>Mid-point check.</strong> Emergency fund ~₹1.2L. SIP corpus ~₹1.1L. PF ~₹4.5L. Record these numbers — watching growth is motivating.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Design Kafka-based systems.</strong> Event-driven payment processing, Real-time fraud detection, Order management with Kafka. Your strongest system design area — own it completely.</div></div>
+        <div class="week-checkpoint"><strong>Week 7 checkpoint:</strong> 50 DSA problems ✓ · 5 STAR stories prepared ✓ · Kafka system designs ready ✓</div>
+      </div>
+    </div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 8 · Aug 22–31 — Graph patterns</div><span class="week-badge wb-g">Mock marathon</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>Graph patterns.</strong> Pacific Atlantic Waterflow, Course Schedule (topological sort), Word Ladder. Topological sort is essential for dependency-based systems — directly relevant to microservices work.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Record a 5-minute video.</strong> Answer: "Tell me about yourself" + "Describe the most complex system you've built." Watch critically — fix 1 thing: filler words, incomplete sentences, pace.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>Emergency fund ₹1.5L reached.</strong> Stop adding to it. Redirect ₹20K/month to extra loan prepayment or increase SIP. You now have 2 months of expenses as safety net.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>2nd full mock interview.</strong> 45 min. Focus on system design round — answers should be 20–25 min, not 5 min. Time yourself strictly.</div></div>
+        <div class="week-checkpoint"><strong>Month 2 end:</strong> 65 DSA problems ✓ · Emergency fund ₹1.5L ✓ · System design confident ✓ · STAR stories memorised ✓ · 4 mock interviews done ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONTH 3 -->
+  <div class="panel" id="panel-month3">
+    <div class="alert warn"><strong>Month 3 theme — Apply aggressively.</strong> This is execution month. Polish DSA, run real interviews, prepare salary negotiation.</div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 9 · Sep 1–7 — Heaps + apply</div><span class="week-badge wb-a">Applications out</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>Heaps.</strong> Kth Largest Element, K Closest Points, Task Scheduler, Find Median from Data Stream. Heaps appear in "top K" problems — very common at product companies.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Salary negotiation script.</strong> Prepare your answer for "What's your expected CTC?" — "Based on my Kafka experience in production banking, I'm targeting ₹60–70L. Open to discussing structure." Practise saying this without hesitation.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>3rd SIP confirmed.</strong> Corpus ~₹1.7L. Consider starting NPS ₹50K/year for additional 80CCD(1B) tax deduction — saves ~₹15,600 in tax annually.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Apply to Razorpay, PhonePe, CRED, Zepto this week.</strong> LinkedIn Easy Apply + careers page both. 1-line personalised cover note each. Keep it short and specific.</div></div>
+        <div class="week-checkpoint"><strong>Week 9 checkpoint:</strong> 75 DSA problems ✓ · All 4 target companies applied ✓ · Salary answer rehearsed ✓</div>
+      </div>
+    </div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 10 · Sep 8–14 — Interview season</div><span class="week-badge wb-a">Expanding reach</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>DP basics.</strong> Climbing Stairs, House Robber, Longest Common Subsequence, Coin Change. Understand the "choice at each step" mental model — most product companies ask only basic DP.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Interview simulation week.</strong> Daily 20-min practice: "Why are you leaving?", "Biggest technical challenge?", "How do you handle disagreements?", "Where do you see yourself in 3 years?" Record and review.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Follow up on applications.</strong> No response in 7 days → message recruiter on LinkedIn: "Hi [name], I applied for Senior Backend Engineer on [date]. I have production Kafka at a banking client — happy to connect." Short, confident, specific.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Expand reach.</strong> Also apply to: Swiggy, Meesho, Groww, Juspay, Setu. Cast wide — you need 2–3 offers to negotiate well.</div></div>
+        <div class="week-checkpoint"><strong>Week 10 checkpoint:</strong> 82 DSA problems ✓ · 8–10 applications total ✓ · First interview call received ✓</div>
+      </div>
+    </div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 11 · Sep 15–21 — Full interview mode</div><span class="week-badge wb-a">Real rounds</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>Revision week.</strong> Stop learning new patterns. Revise top 20 problems — one per pattern. Time yourself: easy in 10 min, medium in 25 min. Speed matters now.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Mock interview marathon.</strong> 3 this week — 1 with Claude, 2 on Pramp. Ask for specific feedback on: communication clarity, structure, confidence. Fix the top 1 thing each time.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Real interviews likely starting.</strong> Most companies: 2–4 weeks from application to first call. First round = recruiter call. Just verify role fit, salary range, notice period. Don't negotiate yet.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>Check notice period contract.</strong> D4Insight likely has 2-month notice. Can you negotiate to 1 month when you get an offer? Understand terms before you need them urgently.</div></div>
+        <div class="week-checkpoint"><strong>Week 11 checkpoint:</strong> Interview rounds started ✓ · DSA patterns solid ✓ · Notice period terms understood ✓</div>
+      </div>
+    </div>
+
+    <div class="week-card">
+      <div class="week-header"><div class="week-title">Week 12 · Sep 22–30 — Close strong</div><span class="week-badge wb-a">Negotiate hard</span></div>
+      <div class="week-body">
+        <div class="pillar-row"><span class="pillar-tag t-career">Career</span><div class="pillar-text"><strong>Negotiate every offer.</strong> Never accept the first number. Say: "Thank you. I'm very excited. I was expecting something closer to ₹65L based on my research — is there flexibility?" Even if no, you've established your value.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-dsa">DSA</span><div class="pillar-text"><strong>Keep solving 1 problem/day</strong> even during interview season. Muscle memory fades in 2 weeks. 30 min/day keeps you sharp for every round.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-comm">Comm</span><div class="pillar-text"><strong>Listen to your Month 1 voice recording.</strong> Compare it to now. The difference will be clear and motivating. 3 months of daily practice compounds faster than you expect.</div></div>
+        <div class="pillar-row"><span class="pillar-tag t-finance">Finance</span><div class="pillar-text"><strong>3-month financial summary:</strong> SIP ~₹1.7L · Emergency fund ₹1.5L · PF ~₹5.8L · Loan reduced ₹2–3L extra · Net worth ~₹30L+. On track for ₹10Cr by 2036.</div></div>
+        <div class="week-checkpoint"><strong>Sep 30 goal:</strong> 90–100 DSA problems ✓ · 10–15 applications sent ✓ · 3–5 interview rounds done ✓ · SIP ₹1.7L corpus ✓ · Emergency fund full ✓ · Offer in pipeline ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINANCE -->
+  <div class="panel" id="panel-finance">
+    <div class="section-title">Monthly cash flow</div>
+    <table class="finance-table">
+      <tr><th>Item</th><th>Amount</th></tr>
+      <tr><td>Madhan take-home</td><td class="green">+₹1,81,000</td></tr>
+      <tr><td>Sankari take-home</td><td class="green">+₹55,000</td></tr>
+      <tr><td>Sankari FD interest</td><td class="green">+₹2,500</td></tr>
+      <tr class="total"><td>Total monthly income</td><td>₹2,38,500</td></tr>
+      <tr><td>Land loan EMI</td><td class="red">−₹51,395</td></tr>
+      <tr><td>Coimbatore rent</td><td class="red">−₹17,000</td></tr>
+      <tr><td>Living expenses</td><td class="red">−₹18,000</td></tr>
+      <tr><td>Chennai travel</td><td class="red">−₹8,000</td></tr>
+      <tr><td>Car (fuel + insurance)</td><td class="red">−₹12,000</td></tr>
+      <tr><td>Phone + internet + misc</td><td class="red">−₹5,000</td></tr>
+      <tr class="total"><td>Investable surplus</td><td>₹1,27,105</td></tr>
+    </table>
+
+    <div class="section-title">SIP allocation — ₹55,000/month</div>
+    <div class="sip-row"><div class="sip-label">UTI Nifty 50 Index Fund</div><div class="sip-bar-bg"><div class="sip-bar-fill" style="width:55%;background:#5DCAA5"></div></div><div class="sip-amount">₹30,000</div></div>
+    <div class="sip-row"><div class="sip-label">Nippon India Midcap 150</div><div class="sip-bar-bg"><div class="sip-bar-fill" style="width:27%;background:#1D9E75"></div></div><div class="sip-amount">₹15,000</div></div>
+    <div class="sip-row"><div class="sip-label">Parag Parikh Flexi Cap</div><div class="sip-bar-bg"><div class="sip-bar-fill" style="width:18%;background:#0F6E56"></div></div><div class="sip-amount">₹10,000</div></div>
+
+    <div class="alert success" style="margin-top:1rem"><strong>All 3 funds available on Zerodha Coin.</strong> Set auto-debit on 5th of every month. Done in 20 minutes. Don't change funds for at least 3 years regardless of market movement.</div>
+
+    <div class="section-title">Remaining surplus allocation</div>
+    <div class="sip-row"><div class="sip-label">Emergency fund (sweep FD)</div><div class="sip-bar-bg"><div class="sip-bar-fill" style="width:28%;background:#AFA9EC"></div></div><div class="sip-amount">₹20,000</div></div>
+    <div class="sip-row"><div class="sip-label">Extra loan prepayment</div><div class="sip-bar-bg"><div class="sip-bar-fill" style="width:35%;background:#F0997B"></div></div><div class="sip-amount">₹25,000</div></div>
+    <div class="sip-row"><div class="sip-label">Buffer / unexpected</div><div class="sip-bar-bg"><div class="sip-bar-fill" style="width:10%;background:#B4B2A9"></div></div><div class="sip-amount">₹7,105</div></div>
+
+    <div class="section-title">Where you'll be by Sep 30, 2026</div>
+    <div class="milestone-list">
+      <div class="milestone"><div class="ms-dot" style="background:#5DCAA5"></div><div class="ms-body"><div class="ms-title">SIP corpus — ~₹1.7L</div><div class="ms-desc">3 months × ₹55K. Small now, massive in 10 years at 12% CAGR.</div></div></div>
+      <div class="milestone"><div class="ms-dot" style="background:#AFA9EC"></div><div class="ms-body"><div class="ms-title">Emergency fund — ₹1.5L</div><div class="ms-desc">Fully built by Month 2. Parked in sweep FD. Untouched safety net.</div></div></div>
+      <div class="milestone"><div class="ms-dot" style="background:#F0997B"></div><div class="ms-body"><div class="ms-title">Loan reduced — ₹75,000 extra paid</div><div class="ms-desc">Loan balance drops from ₹17L to ~₹14.5L. 39 months → ~36 months remaining.</div></div></div>
+      <div class="milestone"><div class="ms-dot" style="background:#EF9F27"></div><div class="ms-body"><div class="ms-title">PF growing — ~₹5.8L</div><div class="ms-desc">Auto ₹30K/month at 8.25% tax-free. Hands-off compounding.</div></div></div>
+      <div class="milestone"><div class="ms-dot" style="background:#378ADD"></div><div class="ms-body"><div class="ms-title">Net worth — ~₹30–31L</div><div class="ms-desc">Up from ₹28.4L. Small jump in 3 months — but velocity is building for ₹10Cr by 2036.</div></div></div>
+    </div>
+  </div>
+
+  <!-- THIS WEEK -->
+  <div class="panel" id="panel-thisweek">
+    <div class="alert warn"><strong>This is the most important tab.</strong> The entire 3-month plan means nothing without a strong first week. Complete all 10 actions before Sunday.</div>
+
+    <div class="section-title">10 actions — tick each as you complete</div>
+    <div class="checklist" id="checklist">
+      <div class="check-row" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-label"><strong>Open Zerodha account</strong> — zerodha.com · 20 min · Need Aadhaar + PAN</div></div>
+      <div class="check-row" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-label"><strong>Set up SIP on Zerodha Coin</strong> — ₹30K UTI Nifty 50 + ₹15K Nippon Midcap + ₹10K Parag Parikh · Auto-debit 5th Aug</div></div>
+      <div class="check-row" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-label"><strong>Open sweep-in FD</strong> — ₹20,000 · SBI / HDFC · Label it "Emergency Fund"</div></div>
+      <div class="check-row" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-label"><strong>Install Grammarly</strong> — grammarly.com/browser · Chrome extension · Free · 2 minutes</div></div>
+      <div class="check-row" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-label"><strong>Open neetcode.io</strong> — solve first 3 problems: Two Sum, Valid Anagram, Contains Duplicate</div></div>
+      <div class="check-row" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-label"><strong>Record "Tell me about yourself"</strong> — 2 minutes on phone voice recorder · Listen back · Save it as baseline</div></div>
+      <div class="check-row" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-label"><strong>Update LinkedIn headline</strong> — "Senior Backend Engineer | Node.js · Kafka · Distributed Systems | Fintech & Banking" · Turn on Open to Work</div></div>
+      <div class="check-row" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-label"><strong>Subscribe to Gaurav Sen</strong> — YouTube · Watch first system design video this weekend</div></div>
+      <div class="check-row" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-label"><strong>Call bank about loan prepayment</strong> — ask: penalty? minimum amount? process?</div></div>
+      <div class="check-row" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-label"><strong>Set 6:30 AM daily alarm</strong> — label it "DSA + Comm" · This single habit drives everything else</div></div>
+    </div>
+
+    <div class="alert success" style="margin-top:1.5rem"><strong>Score yourself:</strong> 10/10 = you're serious. 7–9/10 = you're trying. Below 7 = revisit your priorities. The plan works only if you execute the first week perfectly.</div>
+
+    <div class="divider"></div>
+    <div class="section-title">The 3 numbers that matter most</div>
+    <div class="cards-2">
+      <div class="card success"><div class="card-label">SIP to start this week</div><div class="card-value">₹55,000/mo</div><div class="card-sub">Nifty 50 + midcap + flexi cap. The engine of ₹10Cr.</div></div>
+      <div class="card accent"><div class="card-label">DSA problems per day</div><div class="card-value">1 weekday, 2 weekend</div><div class="card-sub">Unlocks the ₹65L CTC career jump in 6 months.</div></div>
+    </div>
+
+    <div class="alert info"><strong>Remember:</strong> You don't need to be perfect. You need to be consistent. 80% effort every day beats 100% effort 3 days a week. Start today. Not Monday. Today.</div>
+  </div>
+
+  <footer>
+    Madhan's 3-Month Master Plan · Created June 2026 · Review and update monthly<br>
+    Net worth today: ₹28.4L → Target: ₹10Cr by 2036 · Career jump target: Dec 2026
+  </footer>
+
+</div>
+<!-- ==================== END PLAN CONTENT ==================== -->
+
+</div>
+
+<script>
+  const STORED = 'bWFkeXNhbmtAMTI=';
+
+  function checkPassword() {
+    const input = document.getElementById('gate-input').value;
+    if (btoa(input) === STORED) {
+      document.getElementById('gate-overlay').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+      sessionStorage.setItem('plan_auth', '1');
+    } else {
+      const err = document.getElementById('gate-error');
+      err.style.display = 'block';
+      document.getElementById('gate-input').value = '';
+      document.getElementById('gate-input').focus();
+    }
+  }
+
+  document.getElementById('gate-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkPassword();
+  });
+
+  if (sessionStorage.getItem('plan_auth') === '1') {
+    document.getElementById('gate-overlay').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+  }
+
+  function showPanel(name, el) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    el.classList.add('active');
+  }
+
+  function toggleCheck(row) {
+    const box = row.querySelector('.check-box');
+    const label = row.querySelector('.check-label');
+    box.classList.toggle('checked');
+    label.classList.toggle('checked');
+  }
+</script>
+</body>
+</html>
