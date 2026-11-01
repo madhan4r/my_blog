@@ -1,0 +1,190 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Experience from '../components/Experience.astro';
+import DesignFlow from '../components/DesignFlow.astro';
+import { Image } from 'astro:assets';
+import vasoolLogo from '../assets/vasool-money-logo.png';
+import { profile, numbers, caseStudies, project, skills } from '../data/profile';
+
+// Tells search engines who this page is about.
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  jobTitle: profile.role,
+  url: 'https://madhan.dev/',
+  image: 'https://madhan.dev/madhan-portrait.jpg',
+  sameAs: [profile.linkedin, profile.github],
+  worksFor: { '@type': 'Organization', name: 'D4Insight', url: 'https://www.d4insight.com/' },
+  address: { '@type': 'PostalAddress', addressLocality: 'Coimbatore', addressCountry: 'IN' },
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'Bharathiar University' },
+    { '@type': 'CollegeOrUniversity', name: 'NGM College, Pollachi' },
+  ],
+  knowsAbout: ['Node.js', 'Apache Kafka', 'Event-driven architecture', 'Microservices', 'MongoDB', 'Card payments', 'Tokenization', 'UPI', 'Core banking'],
+};
+---
+<Base
+  title={`${profile.name} — ${profile.role}`}
+  description={`${profile.name}, senior backend engineer building real-time payment and banking systems with Node.js and Kafka.`}
+  type="profile"
+  jsonLd={person}
+>
+  <Hero />
+
+  <section class="numbers wrap" aria-label="By the numbers">
+    {numbers.map((n) => (
+      <div class="num">
+        <p class="v">{n.value}</p>
+        <p class="l">{n.label}</p>
+      </div>
+    ))}
+  </section>
+
+  <Experience />
+  <DesignFlow />
+
+  <section id="case-studies" class="section wrap">
+    <h2 class="section-title">Case studies</h2>
+    <p class="lede">Write-ups of how I designed two systems, and the trade-offs.</p>
+    <div class="cases">
+      {caseStudies.map((c) => c.href ? (
+        <a class="case" href={c.href}>
+          <h3>{c.title}</h3>
+          <p class="sum">{c.summary}</p>
+          <p class="stack">{c.stack}</p>
+          <span class="more">Read the case study</span>
+        </a>
+      ) : (
+        <div class="case">
+          <h3>{c.title}</h3>
+          <p class="sum">{c.summary}</p>
+          <p class="stack">{c.stack}</p>
+          <span class="more soon">Write-up coming soon</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section id="projects" class="section wrap">
+    <h2 class="section-title">Projects</h2>
+    <div class="project">
+      <div class="logo"><Image src={vasoolLogo} alt={`${project.name} logo`} width={300} densities={[1, 2]} /></div>
+      <div class="pbody">
+        <div class="ptitle"><h3>{project.name}</h3><span class="live">{project.status}</span></div>
+        <p class="pdesc">{project.description}</p>
+        <ul class="ppoints">{project.points.map((p) => <li>{p}</li>)}</ul>
+        <a class="btn" href={project.url} target="_blank" rel="noopener">Visit vasoolmoney.com</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills" class="section wrap">
+    <h2 class="section-title">Skills</h2>
+    <dl class="skills">
+      {skills.map((s) => (
+        <div class="row"><dt>{s.group}</dt><dd>{s.items}</dd></div>
+      ))}
+    </dl>
+  </section>
+
+  <section id="contact" class="section wrap contact">
+    <h2 class="section-title">Get in touch</h2>
+    <p class="lede">Open to senior backend roles at fintech product companies, remote or hybrid.</p>
+    <div class="email-row">
+      <a class="email" href={`mailto:${profile.email}`}>{profile.email}</a>
+      <button type="button" class="copy" data-email={profile.email}>
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"></rect><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+        <span class="copy-label">Copy email</span>
+      </button>
+      <span class="copy-status" role="status" aria-live="polite"></span>
+    </div>
+    <div class="actions">
+      <a class="btn primary" href={profile.resume} download>Download resume</a>
+      <a class="btn" href={profile.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn" href={profile.github} target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.copy');
+  const label = btn?.querySelector('.copy-label');
+  const status = document.querySelector('.copy-status');
+  let timer: number | undefined;
+
+  const fallbackCopy = (text: string) => {
+    const t = document.createElement('textarea');
+    t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0';
+    document.body.appendChild(t); t.select();
+    const ok = document.execCommand('copy');
+    t.remove();
+    return ok;
+  };
+
+  btn?.addEventListener('click', async () => {
+    const email = btn.dataset.email!;
+    let ok = false;
+    try { await navigator.clipboard.writeText(email); ok = true; } catch { ok = fallbackCopy(email); }
+    btn.classList.toggle('done', ok);
+    if (label) label.textContent = ok ? 'Copied' : 'Copy email';
+    if (status) status.textContent = ok ? 'Email address copied' : 'Couldn\'t copy. Select the address and copy it instead.';
+    clearTimeout(timer);
+    timer = window.setTimeout(() => {
+      btn.classList.remove('done');
+      if (label) label.textContent = 'Copy email';
+      if (status) status.textContent = '';
+    }, 2500);
+  });
+</script>
+
+<style>
+  .numbers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 2rem; padding-bottom: 4rem; }
+  .num { padding-block: 1.25rem; border-top: 2px solid var(--ink); }
+  .v { font-size: clamp(2.1rem, 3.6vw, 2.75rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .l { margin-top: 0.5rem; color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
+
+  .cases { margin-top: 2rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .case { display: flex; flex-direction: column; gap: 0.6rem; padding: 1.5rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; color: var(--ink); text-decoration: none; }
+  a.case:hover { border-color: var(--chip); color: var(--ink); }
+  a.case:hover .more { text-decoration: underline; }
+  .case h3 { font-size: 1.3rem; font-weight: 700; line-height: 1.25; }
+  .sum { color: var(--muted); font-size: 0.95rem; }
+  .stack { font-family: var(--mono); font-size: 0.8125rem; color: var(--muted); margin-top: 0.25rem; }
+  .more { margin-top: auto; padding-top: 0.4rem; font-weight: 600; font-size: 0.95rem; color: var(--chip); }
+  .more.soon { color: var(--muted); }
+
+  .project { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 1.75rem; align-items: center; padding: 1.75rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; }
+  .logo { flex: 1 1 320px; min-height: 220px; display: flex; align-items: center; justify-content: center; padding: 1.5rem; background: #fffdf3; border: 1px solid #f1e7b8; border-radius: 12px; }
+  .logo :global(img) { width: 100%; max-width: 300px; height: auto; }
+  .pbody { flex: 1 1 380px; min-width: 0; }
+  .ptitle { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+  .ptitle h3 { font-size: 1.5rem; font-weight: 700; }
+  .live { padding: 0.1rem 0.65rem; border-radius: 999px; background: var(--settled-soft); color: var(--settled); font-size: 0.8125rem; font-weight: 600; }
+  .pdesc { margin-top: 0.6rem; color: var(--muted); max-width: 56ch; }
+  .ppoints { margin: 0.9rem 0 1.1rem; padding-left: 1.15rem; list-style: disc; display: grid; gap: 0.25rem; }
+  .ppoints li::marker { color: var(--chip); }
+
+  .skills { margin-top: 2rem; }
+  .row { display: flex; flex-wrap: wrap; gap: 0.25rem 2rem; padding-block: 0.85rem; border-bottom: 1px solid var(--rule); }
+  dt { flex: 0 0 14rem; font-weight: 600; }
+  dd { flex: 1 1 320px; color: var(--muted); }
+
+  .email-row { margin-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; }
+  .copy { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 44px; padding: 0 1rem; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .copy:hover { border-color: var(--ink); }
+  .copy.done { border-color: var(--settled); color: var(--settled); }
+  .copy-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .contact .email { display: inline-block; font-size: clamp(1.4rem, 3.4vw, 2.1rem); font-weight: 700; letter-spacing: -0.02em; text-decoration: none; border-bottom: 2px solid var(--chip); word-break: break-word; }
+  .contact .actions { margin-top: 2rem; }
+
+  @media (max-width: 760px) {
+    .numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.25rem; padding-bottom: 2.5rem; }
+    /* case studies become a swipe row */
+    .cases { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 0.9rem; margin-inline: -1.25rem; padding: 0 1.25rem 0.5rem; }
+    .case { flex: 0 0 85%; scroll-snap-align: start; padding: 1.25rem; }
+    .project { padding: 1.1rem; }
+    .logo { min-height: 160px; }
+  }
+</style>

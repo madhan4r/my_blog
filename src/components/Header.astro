@@ -1,0 +1,24 @@
+---
+import { profile } from '../data/profile';
+---
+<header class="topbar wrap">
+  <a href="/" class="mark">{profile.name}</a>
+  <nav aria-label="Main">
+    <a href="/#experience" class="hide-sm">Experience</a>
+    <a href="/#design" class="hide-sm">How I design</a>
+    <a href="/#projects" class="hide-sm">Projects</a>
+    <a href="/#skills" class="hide-sm">Skills</a>
+    <a href="/#contact">Contact</a>
+    <a href={profile.resume} class="resume" download>Resume</a>
+  </nav>
+</header>
+
+<style>
+  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-block: 1.25rem; }
+  .mark { font-weight: 700; text-decoration: none; }
+  nav { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; font-size: 0.95rem; }
+  nav a { color: var(--muted); text-decoration: none; }
+  nav a:hover { color: var(--ink); }
+  nav .resume { color: var(--chip); font-weight: 600; }
+  @media (max-width: 760px) { .hide-sm { display: none; } }
+</style>

@@ -1,0 +1,31 @@
+---
+interface Props {
+  title: string;
+  note: string;
+  decision?: string;
+  kind?: 'main' | 'ok' | 'fail' | 'guard';
+  span?: string;
+}
+const { title, note, decision, kind = 'main', span } = Astro.props;
+---
+<div class:list={['box', kind]} style={span ? `grid-column: ${span}` : undefined}>
+  <p class="t">{title}</p>
+  <p class="n">{note}</p>
+  {decision && (
+    <p class="d">
+      <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10"><path d="M5 0l5 5-5 5-5-5z" fill="currentColor"></path></svg>
+      <span>{decision}</span>
+    </p>
+  )}
+</div>
+
+<style>
+  .box { position: relative; z-index: 1; background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 0.9rem 1rem; }
+  .box.ok { border-color: var(--settled); }
+  .box.fail { background: var(--late-soft); border: 1px dashed var(--late); }
+  .box.guard { background: var(--guard-soft); border-color: var(--guard); }
+  .t { font-weight: 700; font-size: 1rem; }
+  .n { margin-top: 0.25rem; color: var(--muted); font-size: 0.875rem; line-height: 1.45; }
+  .d { margin-top: 0.6rem; display: flex; gap: 0.5rem; color: var(--chip); font-size: 0.8125rem; font-weight: 600; line-height: 1.4; }
+  .d svg { flex: none; margin-top: 0.3em; }
+</style>

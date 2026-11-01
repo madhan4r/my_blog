@@ -1,0 +1,61 @@
+---
+import { experience } from '../data/profile';
+---
+<section id="experience" class="section wrap">
+  <h2 class="section-title">Experience</h2>
+  <ol class="jobs">
+    {experience.map((job, i) => (
+      <li class="job" data-open={i === 0 ? '' : undefined}>
+        <p class="period">{job.period}</p>
+        <div class="body">
+          <h3>{job.title} at <a href={job.url} target="_blank" rel="noopener">{job.company}</a></h3>
+          <p class="client">Client: {job.client}</p>
+          <ul class="points" id={`job-${i}`}>
+            {job.points.map((p) => <li>{p}</li>)}
+          </ul>
+          <button type="button" class="toggle" aria-controls={`job-${i}`} aria-expanded={i === 0 ? 'true' : 'false'}>
+            <span class="when-open">Hide details</span>
+            <span class="when-closed">Show details</span>
+            <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </button>
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.job .toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const job = btn.closest('.job')!;
+      const open = job.hasAttribute('data-open');
+      job.toggleAttribute('data-open', !open);
+      btn.setAttribute('aria-expanded', String(!open));
+    });
+  });
+</script>
+
+<style>
+  .jobs { margin-top: 1.5rem; }
+  .job { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; padding-block: 1.6rem; border-bottom: 1px solid var(--rule); }
+  .job:last-child { border-bottom: 0; }
+  .period { flex: 0 0 11rem; color: var(--muted); font-size: 0.95rem; padding-top: 0.15rem; }
+  .body { flex: 1 1 480px; min-width: 0; }
+  h3 { font-size: 1.25rem; font-weight: 700; line-height: 1.3; }
+  h3 a { color: var(--chip); text-decoration: none; }
+  h3 a:hover { text-decoration: underline; }
+  .client { color: var(--muted); font-size: 0.95rem; margin-top: 0.2rem; }
+  .points { margin-top: 0.9rem; display: grid; gap: 0.45rem; max-width: var(--measure); list-style: disc; padding-left: 1.15rem; }
+  .points li::marker { color: var(--chip); }
+  .toggle { display: none; align-items: center; gap: 0.4rem; min-height: 44px; margin-top: 0.3rem; padding: 0; border: 0; background: none; color: var(--chip); font: inherit; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+  .toggle svg { transition: transform 0.2s ease; }
+  .job[data-open] .toggle svg { transform: rotate(180deg); }
+  .job[data-open] .when-closed, .job:not([data-open]) .when-open { display: none; }
+
+  @media (max-width: 700px) {
+    .job { padding-block: 1.1rem; }
+    .period { flex-basis: 100%; padding: 0; font-size: 0.875rem; }
+    .toggle { display: inline-flex; }
+    .job:not([data-open]) .points { display: none; }
+  }
+</style>

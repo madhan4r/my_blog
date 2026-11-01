@@ -1,0 +1,152 @@
+---
+import Base from '../../layouts/Base.astro';
+const down = (c: string) => `<svg aria-hidden="true" width="14" height="28" viewBox="0 0 14 28"><path d="M7 1v24M1 19l6 6 6-6" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+---
+<Base
+  title="Card delivery tracking: from a next-day batch to real-time events — Madhan Kumar R"
+  description="Case study: replacing a once-a-day status update with an event-driven flow on Kafka, with retries and a cron safety net."
+  type="article"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'Card delivery tracking: from a next-day batch to real-time events',
+    author: { '@type': 'Person', name: 'Madhan Kumar R', url: 'https://madhan.dev/' },
+    image: 'https://madhan.dev/og-image.jpg',
+    mainEntityOfPage: 'https://madhan.dev/case-studies/card-delivery/',
+  }}
+>
+  <article class="wrap">
+    <header class="intro">
+      <a class="back" href="/#case-studies">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        All case studies
+      </a>
+      <h1>Card delivery tracking: from a next-day batch to real-time events</h1>
+      <p class="sub">How I replaced a once-a-day status update with an event-driven flow on Kafka, and built recovery in so a failed update is retried instead of lost.</p>
+      <dl class="meta">
+        <div><dt>Role</dt><dd>Senior Backend Engineer</dd></div>
+        <div><dt>Context</dt><dd>Card platform at a major UAE bank</dd></div>
+        <div><dt>Stack</dt><dd>Node.js, Kafka, MongoDB, Jenkins</dd></div>
+      </dl>
+    </header>
+
+    <section class="prose">
+      <h2>The problem</h2>
+      <p>Card delivery status was updated by a batch job that ran once a day. A card could be delivered in the morning and still show as in transit until the next run, so the status was often up to a day out of date.</p>
+      <p>The goal was to show each change as it happened, without losing updates when a service downstream was slow or unavailable.</p>
+    </section>
+
+    <section class="compare-wrap">
+      <h2>Before and after</h2>
+      <div class="compare">
+        <div class="side before">
+          <p class="label">Before</p>
+          <div class="step"><p class="t">Delivery changes collect all day</p></div>
+          <span class="arr" set:html={down('var(--late)')} />
+          <div class="step"><p class="t">Batch job runs once a day</p></div>
+          <span class="arr" set:html={down('var(--late)')} />
+          <div class="step end"><p class="t">Status updated next day (T+1)</p></div>
+        </div>
+        <div class="side after">
+          <p class="label">After</p>
+          <div class="step"><p class="t">Delivery event published</p><p class="n">The moment the status changes</p></div>
+          <span class="arr" set:html={down('var(--chip)')} />
+          <div class="step"><p class="t">Kafka topic, then a Node.js consumer</p><p class="n">Retries up to 3+ times on failure</p></div>
+          <span class="arr" set:html={down('var(--chip)')} />
+          <div class="step end"><p class="t">Status updated in real time</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="prose">
+      <h2>Key decisions</h2>
+      <div class="decisions">
+        <div>
+          <h3>Events instead of a schedule</h3>
+          <p>Each status change is published to Kafka as it happens. Consumers process it straight away, so nothing waits for the next batch run.</p>
+        </div>
+        <div>
+          <h3>Automatic retries per event</h3>
+          <p>If a downstream call fails, the consumer retries the same event 3+ times. Most failures are short-lived, so this clears them without anyone stepping in.</p>
+        </div>
+        <div>
+          <h3>A cron job as the safety net</h3>
+          <p>Anything still failing after its retries is picked up by a scheduled job and processed again, so an outage delays an update instead of losing it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="prose">
+      <h2>The result</h2>
+      <p>Delivery status moved from a next-day update to real time. The same pattern was then used to make credit card bill payments reflect on the card instantly.</p>
+    </section>
+
+    <section class="prose">
+      <h2>What I would add next</h2>
+      <p class="muted">Ideas I'm exploring for the next version of this pattern:</p>
+      <ul class="next">
+        <li><strong>Idempotency keys</strong>, so a retried event can never be applied twice.</li>
+        <li><strong>A dead-letter queue</strong>, to keep failed events visible and separate from live traffic.</li>
+        <li><strong>Reconciliation and alerts</strong>, comparing against the source of truth and alerting on consumer lag in Grafana.</li>
+      </ul>
+    </section>
+
+    <nav class="more" aria-label="More case studies">
+      <a class="btn" href="/">Back to home</a>
+      <div class="next-cs">
+        <span>Next case study</span>
+        <span class="soon">A multi-network payment gateway, coming soon</span>
+      </div>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .intro { max-width: 760px; padding-block: 3rem 1.5rem; }
+  .back { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; color: var(--muted); font-size: 0.95rem; text-decoration: none; }
+  h1 { margin-top: 0.75rem; font-size: clamp(2.1rem, 4.4vw, 3.1rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; }
+  .sub { margin-top: 1.25rem; color: var(--muted); font-size: 1.15rem; }
+  .meta { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 1.25rem 3rem; padding-block: 1.25rem; border-block: 1px solid var(--rule); }
+  .meta dt { font-size: 0.875rem; color: var(--muted); }
+  .meta dd { margin-top: 0.1rem; font-weight: 600; }
+
+  .prose { max-width: 760px; padding-block: 2rem; }
+  .prose h2, .compare-wrap h2 { font-size: 1.85rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .prose > p { margin-top: 0.9rem; line-height: 1.7; }
+  .muted { color: var(--muted); }
+
+  .compare-wrap { padding-block: 2rem; }
+  .compare { margin-top: 1.5rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .side { display: flex; flex-direction: column; padding: 1.5rem; border-radius: 14px; }
+  .side.before { background: var(--late-soft); border: 1px dashed var(--late); }
+  .side.after { background: var(--surface); border: 1px solid var(--settled); }
+  .label { font-weight: 700; margin-bottom: 1.1rem; }
+  .before .label, .before .end .t { color: var(--late); }
+  .after .label, .after .end .t { color: var(--settled); }
+  .step { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 0.75rem 0.9rem; }
+  .before .end { border-color: var(--late); }
+  .after .end { border-color: var(--settled); }
+  .step .t { font-weight: 700; }
+  .step .n { margin-top: 0.15rem; color: var(--muted); font-size: 0.875rem; }
+  .arr { display: flex; justify-content: center; padding: 0.35rem 0; }
+
+  .decisions { margin-top: 1.25rem; }
+  .decisions > div { padding-block: 1.1rem; border-top: 1px solid var(--rule); }
+  .decisions > div:last-child { border-bottom: 1px solid var(--rule); }
+  .decisions h3 { font-size: 1.2rem; font-weight: 700; }
+  .decisions p { margin-top: 0.35rem; color: var(--muted); }
+
+  .next { margin-top: 0.75rem; padding-left: 1.25rem; list-style: disc; display: grid; gap: 0.5rem; }
+  .next li::marker { color: var(--chip); }
+
+  .more { margin-top: 2rem; padding-block: 2rem; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .next-cs { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+  .next-cs span:first-child { font-size: 0.875rem; color: var(--muted); }
+  .next-cs .soon { font-weight: 700; font-size: 1.1rem; color: var(--muted); }
+
+  @media (max-width: 700px) {
+    .intro { padding-top: 1.5rem; }
+    .compare { grid-template-columns: 1fr; }
+    .next-cs { align-items: flex-start; text-align: left; }
+  }
+</style>

@@ -1,0 +1,160 @@
+---
+import FlowBox from './FlowBox.astro';
+import { design } from '../data/profile';
+const { normal, recovery, safeguards, retryLabel } = design;
+
+const arrow = {
+  right: '<svg aria-hidden="true" width="28" height="14" viewBox="0 0 28 14"><path d="M1 7h24M19 1l6 6-6 6" fill="none" stroke="var(--chip)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  left: '<svg aria-hidden="true" width="28" height="14" viewBox="0 0 28 14"><path d="M27 7H3M9 1L3 7l6 6" fill="none" stroke="var(--late)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 3"/></svg>',
+  down: '<svg aria-hidden="true" width="14" height="28" viewBox="0 0 14 28"><path d="M7 1v24M1 19l6 6 6-6" fill="none" stroke="var(--late)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 3"/></svg>',
+  up: '<svg aria-hidden="true" width="14" height="28" viewBox="0 0 14 28"><path d="M7 27V3M1 9l6-6 6 6" fill="none" stroke="var(--late)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 3"/></svg>',
+  downGold: '<svg aria-hidden="true" width="14" height="28" viewBox="0 0 14 28"><path d="M7 1v24M1 19l6 6 6-6" fill="none" stroke="var(--chip)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
+---
+<section id="design" class="section wrap">
+  <h2 class="section-title">How I design event-driven systems</h2>
+  <p class="lede">The pattern I use for systems that can't lose an update. Failures are expected, so ordering, duplicates, recovery and checking are designed in from the start.</p>
+
+  <!-- Wide screens: the whole architecture at once -->
+  <div class="desk">
+    <div class="grid row1">
+      <span class="pulse" aria-hidden="true"><span class="dot"></span></span>
+      <FlowBox {...normal[0]} />
+      <span class="cell" set:html={arrow.right} />
+      <FlowBox {...normal[1]} />
+      <span class="cell" set:html={arrow.right} />
+      <FlowBox {...normal[2]} />
+      <span class="cell" set:html={arrow.right} />
+      <FlowBox {...normal[3]} kind="ok" />
+    </div>
+    <div class="grid">
+      <span></span><span></span>
+      <span class="cell" set:html={arrow.up} />
+      <span></span>
+      <span class="cell retry"><Fragment set:html={arrow.down} /><span>{retryLabel}</span></span>
+      <span></span><span></span>
+
+      <span></span><span></span>
+      <FlowBox {...recovery.reprocessor} kind="fail" />
+      <span class="cell" set:html={arrow.left} />
+      <FlowBox {...recovery.dlq} kind="fail" />
+      <span></span><span></span>
+
+      <span class="spacer"></span>
+      <FlowBox {...safeguards[0]} kind="guard" span="1 / 4" />
+      <span></span>
+      <FlowBox {...safeguards[1]} kind="guard" span="5 / 8" />
+    </div>
+  </div>
+
+  <!-- Narrow screens: one part of the flow at a time -->
+  <div class="mob">
+    <div class="tabs" role="tablist" aria-label="Part of the flow">
+      <button type="button" role="tab" id="tab-normal" aria-controls="panel-normal" aria-selected="true">Normal path</button>
+      <button type="button" role="tab" id="tab-recovery" aria-controls="panel-recovery" aria-selected="false" tabindex="-1">Recovery</button>
+      <button type="button" role="tab" id="tab-safe" aria-controls="panel-safe" aria-selected="false" tabindex="-1">Safeguards</button>
+    </div>
+    <div role="tabpanel" id="panel-normal" aria-labelledby="tab-normal" class="stack">
+      {normal.map((b, i) => (
+        <>
+          {i > 0 && <span class="vcell" set:html={arrow.downGold} />}
+          <FlowBox {...b} kind={i === normal.length - 1 ? 'ok' : 'main'} />
+        </>
+      ))}
+    </div>
+    <div role="tabpanel" id="panel-recovery" aria-labelledby="tab-recovery" class="stack" hidden>
+      <p class="retry-note">After 3+ retries with backoff</p>
+      <FlowBox {...recovery.dlq} kind="fail" />
+      <span class="vcell" set:html={arrow.down} />
+      <FlowBox {...recovery.reprocessor} kind="fail" />
+    </div>
+    <div role="tabpanel" id="panel-safe" aria-labelledby="tab-safe" class="stack gap" hidden>
+      {safeguards.map((b) => <FlowBox {...b} kind="guard" />)}
+    </div>
+  </div>
+
+  <ul class="legend">
+    <li><span class="sw line" aria-hidden="true"></span>Normal path</li>
+    <li><span class="sw dash" aria-hidden="true"></span>Recovery path</li>
+    <li><span class="sw guard" aria-hidden="true"></span>Safeguards across the whole flow</li>
+    <li><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10"><path d="M5 0l5 5-5 5-5-5z" fill="var(--chip)"></path></svg>Design decision</li>
+  </ul>
+</section>
+
+<script>
+  // One pass of the dot along the normal path, the first time the diagram is seen.
+  const grid = document.querySelector('#design .row1');
+  if (grid && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { grid.classList.add('seen'); io.disconnect(); }
+    }, { threshold: 0.5 });
+    io.observe(grid);
+  }
+
+  // Tabs on narrow screens.
+  const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('#design [role="tab"]'));
+  const select = (tab: HTMLButtonElement) => {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
+    });
+  };
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      select(next); next.focus();
+    });
+  });
+</script>
+
+<style>
+  .desk { margin-top: 2rem; overflow-x: auto; }
+  .row1 { margin-bottom: 10px; }
+  .grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) 40px minmax(0,1fr) 40px minmax(0,1fr) 40px minmax(0,1fr);
+    row-gap: 10px;
+    min-width: 900px;
+  }
+  .cell { display: flex; align-items: center; justify-content: center; }
+  .retry { gap: 0.5rem; font-size: 0.8125rem; font-weight: 600; color: var(--late); white-space: nowrap; }
+  .spacer { grid-column: 1 / -1; height: 14px; }
+
+  /* travelling dot along row 1 (sits behind the boxes, shows in the gaps) */
+  .pulse { position: absolute; left: 0; right: 0; top: 50%; height: 0; z-index: 0; }
+  .dot { position: absolute; left: 0; top: -5px; width: 10px; height: 10px; border-radius: 50%; background: var(--chip); box-shadow: 0 0 0 4px color-mix(in srgb, var(--chip) 25%, transparent); opacity: 0; }
+  .seen .dot { animation: travel 2.4s cubic-bezier(.45,0,.25,1) both; }
+  @keyframes travel {
+    0% { left: 0; opacity: 0; }
+    8% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: calc(100% - 10px); opacity: 0; }
+  }
+
+  .mob { display: none; margin-top: 1.25rem; }
+  .tabs { display: flex; gap: 4px; padding: 4px; background: var(--tab-track); border-radius: 999px; }
+  .tabs button { flex: 1 1 0; min-height: 44px; padding: 0 0.5rem; border: 0; border-radius: 999px; background: transparent; color: var(--ink); font: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+  .stack { margin-top: 1rem; display: flex; flex-direction: column; }
+  .stack.gap { gap: 10px; }
+  .stack[hidden] { display: none; }
+  .vcell { display: flex; justify-content: center; padding: 4px 0; }
+  .retry-note { margin-bottom: 0.5rem; font-size: 0.8125rem; font-weight: 600; color: var(--late); }
+
+  .legend { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-size: 0.875rem; color: var(--muted); }
+  .legend li { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .sw { display: inline-block; width: 22px; }
+  .sw.line { height: 2px; background: var(--chip); }
+  .sw.dash { border-top: 2px dashed var(--late); }
+  .sw.guard { width: 12px; height: 12px; border-radius: 3px; background: var(--guard-soft); border: 1px solid var(--guard); }
+
+  @media (max-width: 760px) {
+    .desk { display: none; }
+    .mob { display: block; }
+  }
+</style>
