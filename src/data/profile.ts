@@ -27,7 +27,7 @@ export const integrations = [
 export const numbers = [
   { value: '6.5+', label: 'years building backend systems' },
   { value: '6', label: 'engineers led on a payment gateway' },
-  { value: '2,000+', label: 'concurrent transactions sustained' },
+  { value: '200–300', label: 'TPS consumed in real time' },
   { value: '100,000+', label: 'users served on a healthcare platform' },
 ];
 
@@ -41,11 +41,12 @@ export const experience = [
     points: [
       'Process Finacle events on Kafka for debit card issuance, delivery and lifecycle updates.',
       'Rebuilt the card delivery flow as event-driven Kafka microservices.',
-      'Moved Finacle credit card bill payment sync from a next-day (T+1) batch to instant updates.',
-      'Made these flows fault-tolerant with 3+ automatic retries per event and a cron-based retry job.',
+      'Moved Finacle credit card bill payment sync from a next-day (T+1) batch to real-time Kafka consumers at 200–300 TPS, filtering about 10K payments a day for processing.',
+      'Made these flows fault-tolerant with per-event automatic retries and a scheduled recovery job.',
       'Launched wallet-token management across Mastercard, Visa and Jaywan (UAE domestic scheme).',
       'Built secure REST APIs with audit trails, aligned with banking compliance and SLA requirements.',
       'Building the Mastercard rewards claim integration.',
+      'Owned 24×7 production support for these banking services, leading resolution of P1/P2 incidents.',
     ],
   },
   {
@@ -58,7 +59,7 @@ export const experience = [
       'Led a team of 6 engineers; code reviews and automated testing cut production bugs by 40%.',
       'Integrated Mastercard, Visa, RuPay (NPCI), PhonePe and Cashfree into a multi-network gateway on NestJS.',
       'Built UPI Collect, UPI Intent, card and net-banking flows with AES/RSA encryption and tokenization.',
-      'Designed Kafka streaming with Redis and Bull queues, sustaining 2,000+ concurrent transactions.',
+      'Designed Kafka streaming with Redis and Bull queues for high-TPS payment processing.',
     ],
   },
   {
@@ -123,9 +124,9 @@ export const project = {
 };
 
 export const skills = [
-  { group: 'Languages and frameworks', items: 'Node.js, TypeScript, NestJS, Express, Python, FastAPI, Vue.js' },
+  { group: 'Languages and frameworks', items: 'Node.js, TypeScript, NestJS, Express, Python, FastAPI' },
   { group: 'Messaging', items: 'Apache Kafka, Bull queues, event-driven microservices' },
   { group: 'Data', items: 'MongoDB, PostgreSQL, Redis' },
   { group: 'Payments and security', items: 'Card schemes, tokenization, UPI, Finacle, AES/RSA, JWT' },
-  { group: 'Delivery and operations', items: 'Jenkins, GitHub Actions, Docker, AWS, Grafana, ELK Stack, Playwright' },
+  { group: 'Delivery and operations', items: 'Jenkins, GitHub Actions, Docker, AWS, Grafana, ELK Stack' },
 ];
