@@ -35,7 +35,7 @@ export const experience = [
   {
     company: 'D4Insight',
     url: 'https://www.d4insight.com/',
-    title: 'Senior Backend Engineer',
+    title: 'Senior Software Engineer',
     client: 'Emirates NBD',
     period: 'Dec 2024 – Present',
     points: [
@@ -52,7 +52,7 @@ export const experience = [
   {
     company: 'Techno Consulting Services',
     url: 'https://www.linkedin.com/company/technoconsulting-in/',
-    title: 'Full Stack Engineer',
+    title: 'Senior Full Stack Engineer',
     client: 'CredoPay (payment gateway)',
     period: 'Mar 2022 – Nov 2024',
     points: [
